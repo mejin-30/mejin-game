@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古籍密码 - 解密游戏</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a56db',
+                        secondary: '#e5edff',
+                        accent: '#d92d20',
+                        dark: '#1e293b',
+                        light: '#f8fafc',
+                        muted: '#94a3b8',
+                        'paper-texture': '#f5f1e6',
+                        'blood-red': '#a8071a',
+                        'ancient-yellow': '#d4af37',
+                        'dark-wood': '#5d4037'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif'],
+                        mono: ['Courier New', 'monospace']
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/d705d818b886417587920fff9832cfb1~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=k3d0YX%2FDugvA5JE67vvIshf3yKM%3D')",
+                        'ancient-scroll': "url('https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/df2e1ae5b7cf4244b7109eeff57d8049~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=dQJ5fhwxUVxezTIPFnUO1dCeR5E%3D')"
+                    },
+                    boxShadow: {
+                        'text': '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                        'glow': '0 0 10px rgba(217, 45, 32, 0.7)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'fade-out': 'fadeOut 1s ease-in-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        fadeOut: {
+                            '0%': { opacity: '1' },
+                            '100%': { opacity: '0' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-red {
+                text-shadow: 0 0 5px rgba(217, 45, 32, 0.7);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .ancient-text {
+                font-family: 'Noto Serif SC', serif;
+                letter-spacing: 0.1em;
+                line-height: 1.8;
+            }
+            .morse-code {
+                font-family: 'Courier New', monospace;
+                letter-spacing: 0.2em;
+            }
+            .glow-effect {
+                filter: drop-shadow(0 0 8px rgba(217, 45, 32, 0.7));
+            }
+            .paper-texture-bg {
+                background-color: #f5f1e6;
+                background-image: 
+                    linear-gradient(rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+                background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+                background-position: center center;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- 加载屏幕 -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-dark">
+        <div class="text-center">
+            <div class="w-24 h-24 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-light text-xl">正在加载游戏...</p>
+        </div>
+    </div>
+
+    <!-- 游戏容器 -->
+    <div id="game-container" class="hidden min-h-screen flex flex-col">
+        <!-- 顶部导航栏 -->
+        <header class="bg-primary text-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <h1 class="text-2xl font-bold">古籍密码</h1>
+                <div class="flex space-x-4">
+                    <button id="help-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-question-circle mr-1"></i> 帮助
+                    </button>
+                    <button id="notes-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-sticky-note mr-1"></i> 笔记
+                    </button>
+                    <button id="settings-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-cog mr-1"></i> 设置
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6 flex flex-col md:flex-row">
+            <!-- 左侧边栏 - 案件档案 -->
+            <aside class="w-full md:w-1/4 mb-6 md:mb-0 md:mr-6">
+                <div class="bg-white rounded-lg shadow-md p-4 h-full">
+                    <h2 class="text-xl font-bold mb-4 border-b pb-2">案件档案</h2>
+                    <div class="space-y-4">
+                        <div class="case-file">
+                            <h3 class="font-bold text-primary">案件编号: 2025-0715</h3>
+                            <p class="text-sm text-muted">更新日期: 2025年7月15日</p>
+                        </div>
+                        <div class="case-description">
+                            <p class="mb-2">北京故宫博物院发生一起离奇案件，一卷珍贵的明代古籍《永乐大典》抄本在深夜被盗。</p>
+                            <p class="mb-2">古籍保管室门窗完好，无明显闯入痕迹，监控录像在案发时段出现异常干扰。</p>
+                            <p>唯一的线索是现场留下的一张神秘纸条，上面写着奇怪的符号和一个红色的"血"字。</p>
+                        </div>
+                        <div class="evidence-list">
+                            <h3 class="font-bold mb-2">已发现线索:</h3>
+                            <ul class="list-disc list-inside space-y-1 text-sm">
+                                <li><a href="#" class="text-primary hover:underline clue-link" data-clue="mysterious-note">神秘纸条</a></li>
+                                <li><a href="#" class="text-primary hover:underline clue-link" data-clue="surveillance-footage">监控录像</a></li>
+                                <li><a href="#" class="text-primary hover:underline clue-link" data-clue="witness-statement">目击者证词</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- 中间内容区 - 主要游戏区域 -->
+            <section class="w-full md:w-2/4 mb-6 md:mb-0">
+                <!-- 搜索栏 -->
+                <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+                    <div class="flex">
+                        <input type="text" id="search-input" class="flex-grow px-4 py-2 border rounded-l focus:outline-none focus:ring-2 focus:ring-primary" placeholder="输入关键词搜索线索...">
+                        <button id="search-btn" class="bg-primary text-white px-4 py-2 rounded-r hover:bg-blue-700 transition-colors">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="search-results" class="mt-2 hidden">
+                        <div class="p-2 bg-gray-100 rounded">
+                            <p class="text-sm text-muted">搜索结果将显示在这里...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 主要内容显示区 -->
+                <div id="content-display" class="bg-white rounded-lg shadow-md p-6 min-h-[400px]">
+                    <div id="home-content">
+                        <div class="text-center mb-6">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/d705d818b886417587920fff9832cfb1~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=k3d0YX%2FDugvA5JE67vvIshf3yKM%3D" alt="古籍图书馆" class="w-full max-w-md mx-auto rounded-lg shadow-lg mb-4">
+                            <h2 class="text-2xl font-bold text-primary">欢迎来到《古籍密码》</h2>
+                        </div>
+                        <p class="mb-4">你是一名刚入职的文物犯罪调查科警员，被指派调查这起离奇的古籍失窃案。</p>
+                        <p class="mb-4">通过分析线索、破解密码和调查嫌疑人，你需要找出真相并追回失窃的珍贵古籍。</p>
+                        <p class="mb-4">随着调查深入，你会发现这起案件背后隐藏着一个与中国古代神话相关的惊天秘密...</p>
+                        <div class="text-center mt-6">
+                            <button id="start-investigation" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                开始调查
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 线索内容将通过JavaScript动态加载 -->
+                </div>
+            </section>
+
+            <!-- 右侧边栏 - 人物档案和笔记 -->
+            <aside class="w-full md:w-1/4 md:ml-6">
+                <div class="bg-white rounded-lg shadow-md p-4 h-full">
+                    <h2 class="text-xl font-bold mb-4 border-b pb-2">人物档案</h2>
+                    <div class="space-y-4">
+                        <div class="person-profile">
+                            <h3 class="font-bold">李明哲</h3>
+                            <p class="text-sm text-muted">故宫博物院古籍部主任</p>
+                            <p class="text-sm mt-1">负责古籍保管工作，案发当晚值班。</p>
+                        </div>
+                        <div class="person-profile">
+                            <h3 class="font-bold">王芳</h3>
+                            <p class="text-sm text-muted">故宫博物院保安</p>
+                            <p class="text-sm mt-1">案发当晚巡逻保安，声称看到可疑人物。</p>
+                        </div>
+                        <div class="person-profile">
+                            <h3 class="font-bold">陈教授</h3>
+                            <p class="text-sm text-muted">古籍研究专家</p>
+                            <p class="text-sm mt-1">案发前一天曾研究过被盗古籍。</p>
+                        </div>
+                        <div class="person-profile">
+                            <h3 class="font-bold">神秘人</h3>
+                            <p class="text-sm text-muted">身份不明</p>
+                            <p class="text-sm mt-1">王芳声称在案发当晚看到的可疑人物。</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="bg-dark text-light py-3">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div id="game-status" class="text-sm">调查进度: <span class="text-primary">10%</span></div>
+                <div id="game-time" class="text-sm">游戏时间: <span>00:00:00</span></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 线索弹窗 -->
+    <div id="clue-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="clue-title" class="text-2xl font-bold text-primary"></h2>
+                    <button id="close-clue" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="clue-content" class="prose max-w-none"></div>
+                <div class="mt-6 flex justify-end">
+                    <button id="close-clue-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div id="help-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">游戏帮助</h2>
+                    <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="prose max-w-none">
+                    <h3>如何玩</h3>
+                    <ol>
+                        <li>点击左侧"案件档案"中的线索开始调查</li>
+                        <li>使用顶部搜索栏输入关键词查找相关线索</li>
+                        <li>破解密码和谜题，解锁新的线索</li>
+                        <li>通过分析线索和人物关系，找出案件真相</li>
+                    </ol>
+                    <h3>游戏功能</h3>
+                    <ul>
+                        <li><strong>笔记</strong>：记录重要线索和密码</li>
+                        <li><strong>设置</strong>：调整游戏音效和画面</li>
+                        <li><strong>搜索</strong>：输入关键词查找相关信息</li>
+                    </ul>
+                    <h3>提示</h3>
+                    <p>注意观察细节，有些线索可能隐藏在文本或图片中。遇到密码谜题时，可以尝试使用常见的密码破解方法，如凯撒密码、摩斯密码等。</p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="close-help-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        我知道了
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 笔记弹窗 -->
+    <div id="notes-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">调查笔记</h2>
+                    <button id="close-notes" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="notes-content" class="prose max-w-none min-h-[300px] bg-gray-50 p-4 rounded">
+                    <p class="text-muted italic">你的笔记将显示在这里。点击线索可以添加到笔记中。</p>
+                </div>
+                <div class="mt-4 flex justify-between">
+                    <button id="clear-notes" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+                        清空笔记
+                    </button>
+                    <button id="close-notes-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div id="settings-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">游戏设置</h2>
+                    <button id="close-settings" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-gray-700 mb-2">音效音量</label>
+                        <input type="range" min="0" max="100" value="80" class="w-full">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 mb-2">背景音乐音量</label>
+                        <input type="range" min="0" max="100" value="50" class="w-full">
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="mr-2">
+                            <span>显示提示</span>
+                        </label>
+                    </div>
+                    <div>
+                        <label class="flex items-center">
+                            <input type="checkbox" checked class="mr-2">
+                            <span>恐怖氛围效果</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="save-settings" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                        保存设置
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 密码破解弹窗 -->
+    <div id="password-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="password-title" class="text-2xl font-bold text-primary">密码破解</h2>
+                    <button id="close-password" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="password-description" class="mb-4">
+                    <p>请输入密码:</p>
+                </div>
+                <div class="mb-4">
+                    <input type="text" id="password-input" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary" placeholder="输入密码...">
+                </div>
+                <div id="password-hint" class="text-sm text-muted mb-4">
+                    <p>提示: <span></span></p>
+                </div>
+                <div id="password-result" class="hidden mb-4 p-2 rounded"></div>
+                <div class="mt-6 flex justify-end">
+                    <button id="submit-password" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                        提交
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第四面墙打破效果 -->
+    <div id="fourth-wall-effect" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center">
+            <div class="text-center text-white max-w-2xl p-6">
+                <p id="fourth-wall-text" class="text-xl mb-6 animate-pulse-slow"></p>
+                <button id="continue-btn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    继续
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const gameData = {
+            clues: {
+                "mysterious-note": {
+                    title: "神秘纸条",
+                    content: `
+                        <div class="text-center mb-4">
+                            <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/df2e1ae5b7cf4244b7109eeff57d8049~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=dQJ5fhwxUVxezTIPFnUO1dCeR5E%3D" alt="神秘纸条" class="max-w-md mx-auto rounded-lg shadow-lg">
+                        </div>
+                        <p class="mb-4">在古籍保管室的地板上发现的神秘纸条，上面有一些奇怪的符号和一个红色的"血"字。</p>
+                        <p class="mb-4">纸条材质古老，似乎不是现代产物。红色的"血"字经过初步检测，确认是人血。</p>
+                        <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                            <h4 class="font-bold mb-2">纸条上的符号:</h4>
+                            <p class="morse-code text-center text-lg">●● ● ●●● / ●●● ●● ● / ● ●● ●●● / ●●● ●●● ●●●</p>
+                        </div>
+                        <p>符号下方还有一行小字，似乎是某种提示:</p>
+                        <p class="ancient-text text-center italic mt-2">"月出东方，光照九州，神龟献瑞，洛书出世"</p>
+                        <div class="mt-6 flex justify-center">
+                            <button class="password-puzzle bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors" data-puzzle="morse-code">
+                                破解密码
+                            </button>
+                        </div>
+                    `,
+                    keywords: ["神秘纸条", "符号", "血字", "摩斯密码", "洛书"]
+                },
+                "surveillance-footage": {
+                    title: "监控录像",
+                    content: `
+                        <p class="mb-4">案发当晚的监控录像出现异常干扰，大部分画面无法清晰辨认。</p>
+                        <p class="mb-4">经过技术修复，只有少量片段可以观看:</p>
+                        <div class="bg-black text-white p-4 rounded-lg mb-4 text-center">
+                            <p class="mb-2">【监控片段 00:15:32】</p>
+                            <p class="mb-2">画面模糊，可以看到一个黑影在古籍保管室门口徘徊。</p>
+                            <p class="mb-2">【监控片段 00:17:45】</p>
+                            <p class="mb-2">画面受到严重干扰，只能看到闪烁的雪花点和一些奇怪的符号。</p>
+                            <p>【监控片段 00:20:11】</p>
+                            <p>画面恢复，但古籍保管室内已空无一人，《永乐大典》抄本消失不见。</p>
+                        </div>
+                        <p class="mb-4">技术人员发现，监控录像中的干扰信号似乎包含某种规律，可能是一种加密信息。</p>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold mb-2">干扰信号分析:</h4>
+                            <p class="text-sm">信号频率: 7.83 Hz</p>
+                            <p class="text-sm">信号模式: 周期性波动，周期为12秒</p>
+                            <p class="text-sm">信号强度: 忽强忽弱，似乎与月球位置有关</p>
+                        </div>
+                    `,
+                    keywords: ["监控录像", "干扰信号", "黑影", "雪花点", "7.83 Hz"]
+                },
+                "witness-statement": {
+                    title: "目击者证词",
+                    content: `
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold mb-2">李明哲 (古籍部主任)</h4>
+                                <p class="text-sm mb-2">"我当晚一直在办公室整理资料，大约在凌晨1点左右听到保管室有异响，但我以为是老鼠，就没有在意。"</p>
+                                <p class="text-sm mb-2">"《永乐大典》抄本非常珍贵，我们有严格的安保措施，不知道小偷是怎么进去的。"</p>
+                                <p class="text-sm">"那个神秘纸条上的符号看起来像是某种古代密码，我在一些宋代文献中见过类似的符号。"</p>
+                            </div>
+                            <div class="bg-gray-100 p-4 rounded-lg">
+                                <h4 class="font-bold mb-2">王芳 (保安)</h4>
+                                <p class="text-sm mb-2">"我在巡逻时看到一个穿着黑色长袍的人影在古籍馆附近徘徊，戴着帽子和口罩，看不清脸。"</p>
+                                <p class="text-sm mb-2">"那个人行动诡异，看到我就立刻消失在阴影中。我当时觉得奇怪，但没有想到会发生盗窃案。"</p>
+                                <p class="text-sm">"那个人的眼睛很奇怪，在黑暗中似乎发出微弱的红光。"</p>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <h4 class="font-bold mb-2">陈教授 (古籍研究专家)</h4>
+                            <p class="text-sm mb-2">"我前一天确实研究过那卷《永乐大典》抄本，那是一卷关于中国古代神话的内容，特别是关于女娲补天和伏羲八卦的部分。"</p>
+                            <p class="text-sm mb-2">"那卷抄本中有一些非常罕见的记载，可能对研究中国古代神话有重要价值。"</p>
+                            <p class="text-sm">"我在研究过程中发现，抄本的最后几页似乎被人撕去了，内容不完整。"</p>
+                        </div>
+                    `,
+                    keywords: ["李明哲", "王芳", "陈教授", "黑色长袍", "女娲补天", "伏羲八卦"]
+                }
+            },
+            puzzles: {
+                "morse-code": {
+                    title: "摩斯密码破解",
+                    description: "纸条上的符号似乎是摩斯密码，请尝试破解:",
+                    code: "●● ● ●●● / ●●● ●● ● / ● ●● ●●● / ●●● ●●● ●●●",
+                    hint: "这是一种常见的密码，由点和划组成。提示：月出东方，光照九州",
+                    solution: "LOST",
+                    reward: "破解成功！密码是'LOST'。这个词似乎与失窃的古籍有关。你获得了新的线索：失窃的《永乐大典》抄本中记载了关于'洛书'的秘密。"
+                }
+            },
+            notes: [],
+            foundClues: ["mysterious-note", "surveillance-footage", "witness-statement"],
+            gameProgress: 10,
+            gameTime: 0,
+            gameStarted: false,
+            fourthWallBreaks: [
+                "你确定要继续吗？这个案件可能比你想象的更加危险...",
+                "有人在看着你...你感觉到了吗？",
+                "你以为这只是一个游戏吗？再仔细想想..."
+            ]
+        };
+
+        // DOM元素
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameContainer = document.getElementById('game-container');
+        const contentDisplay = document.getElementById('content-display');
+        const homeContent = document.getElementById('home-content');
+        const searchInput = document.getElementById('search-input');
+        const searchBtn = document.getElementById('search-btn');
+        const searchResults = document.getElementById('search-results');
+        const clueLinks = document.querySelectorAll('.clue-link');
+        const clueModal = document.getElementById('clue-modal');
+        const clueTitle = document.getElementById('clue-title');
+        const clueContent = document.getElementById('clue-content');
+        const closeClue = document.getElementById('close-clue');
+        const closeClueBtn = document.getElementById('close-clue-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelp = document.getElementById('close-help');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        const notesBtn = document.getElementById('notes-btn');
+        const notesModal = document.getElementById('notes-modal');
+        const closeNotes = document.getElementById('close-notes');
+        const closeNotesBtn = document.getElementById('close-notes-btn');
+        const notesContent = document.getElementById('notes-content');
+        const clearNotes = document.getElementById('clear-notes');
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModal = document.getElementById('settings-modal');
+        const closeSettings = document.getElementById('close-settings');
+        const saveSettings = document.getElementById('save-settings');
+        const passwordModal = document.getElementById('password-modal');
+        const passwordTitle = document.getElementById('password-title');
+        const passwordDescription = document.getElementById('password-description');
+        const passwordInput = document.getElementById('password-input');
+        const passwordHint = document.getElementById('password-hint');
+        const passwordResult = document.getElementById('password-result');
+        const closePassword = document.getElementById('close-password');
+        const submitPassword = document.getElementById('submit-password');
+        const fourthWallEffect = document.getElementById('fourth-wall-effect');
+        const fourthWallText = document.getElementById('fourth-wall-text');
+        const continueBtn = document.getElementById('continue-btn');
+        const startInvestigation = document.getElementById('start-investigation');
+        const gameStatus = document.getElementById('game-status');
+        const gameTimeDisplay = document.getElementById('game-time');
+
+        // 游戏初始化
+        function initGame() {
+            // 模拟加载
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                gameContainer.classList.remove('hidden');
+                gameContainer.classList.add('animate-fade-in');
+            }, 2000);
+
+            // 初始化事件监听
+            initEventListeners();
+        }
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 线索链接点击事件
+            clueLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const clueId = link.getAttribute('data-clue');
+                    showClue(clueId);
+                });
+            });
+
+            // 关闭线索弹窗
+            closeClue.addEventListener('click', () => {
+                clueModal.classList.add('hidden');
+            });
+
+            closeClueBtn.addEventListener('click', () => {
+                clueModal.classList.add('hidden');
+            });
+
+            // 帮助按钮点击事件
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+            });
+
+            // 关闭帮助弹窗
+            closeHelp.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            // 笔记按钮点击事件
+            notesBtn.addEventListener('click', () => {
+                updateNotesDisplay();
+                notesModal.classList.remove('hidden');
+            });
+
+            // 关闭笔记弹窗
+            closeNotes.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            closeNotesBtn.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            // 清空笔记
+            clearNotes.addEventListener('click', () => {
+                if (confirm('确定要清空所有笔记吗？')) {
+                    gameData.notes = [];
+                    updateNotesDisplay();
+                }
+            });
+
+            // 设置按钮点击事件
+            settingsBtn.addEventListener('click', () => {
+                settingsModal.classList.remove('hidden');
+            });
+
+            // 关闭设置弹窗
+            closeSettings.addEventListener('click', () => {
+                settingsModal.classList.add('hidden');
+            });
+
+            // 保存设置
+            saveSettings.addEventListener('click', () => {
+                // 模拟保存设置
+                settingsModal.classList.add('hidden');
+                showNotification('设置已保存');
+            });
+
+            // 关闭密码弹窗
+            closePassword.addEventListener('click', () => {
+                passwordModal.classList.add('hidden');
+                passwordInput.value = '';
+                passwordResult.classList.add('hidden');
+            });
+
+            // 提交密码
+            submitPassword.addEventListener('click', () => {
+                checkPassword();
+            });
+
+            // 密码输入框回车事件
+            passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+
+            // 继续按钮点击事件
+            continueBtn.addEventListener('click', () => {
+                fourthWallEffect.classList.add('hidden');
+            });
+
+            // 开始调查按钮点击事件
+            startInvestigation.addEventListener('click', () => {
+                startGame();
+            });
+
+            // 搜索按钮点击事件
+            searchBtn.addEventListener('click', () => {
+                performSearch();
+            });
+
+            // 搜索输入框回车事件
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+
+        // 显示线索
+        function showClue(clueId) {
+            const clue = gameData.clues[clueId];
+            if (!clue) return;
+
+            clueTitle.textContent = clue.title;
+            clueContent.innerHTML = clue.content;
+            clueModal.classList.remove('hidden');
+
+            // 添加密码破解按钮事件
+            const passwordButtons = clueContent.querySelectorAll('.password-puzzle');
+            passwordButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const puzzleId = button.getAttribute('data-puzzle');
+                    showPasswordPuzzle(puzzleId);
+                });
+            });
+
+            // 添加到笔记的按钮
+            const addToNotesButtons = clueContent.querySelectorAll('.add-to-notes');
+            addToNotesButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const noteText = button.getAttribute('data-note');
+                    addToNotes(noteText);
+                });
+            });
+        }
+
+        // 显示密码谜题
+        function showPasswordPuzzle(puzzleId) {
+            const puzzle = gameData.puzzles[puzzleId];
+            if (!puzzle) return;
+
+            passwordTitle.textContent = puzzle.title;
+            passwordDescription.innerHTML = puzzle.description;
+            passwordHint.querySelector('span').textContent = puzzle.hint;
+            passwordModal.classList.remove('hidden');
+            passwordInput.value = '';
+            passwordResult.classList.add('hidden');
+
+            // 存储当前谜题ID
+            passwordModal.setAttribute('data-puzzle-id', puzzleId);
+        }
+
+        // 检查密码
+        function checkPassword() {
+            const puzzleId = passwordModal.getAttribute('data-puzzle-id');
+            const puzzle = gameData.puzzles[puzzleId];
+            if (!puzzle) return;
+
+            const userInput = passwordInput.value.trim().toUpperCase();
+
+            if (userInput === puzzle.solution) {
+                passwordResult.textContent = puzzle.reward;
+                passwordResult.classList.remove('hidden', 'bg-red-100', 'text-red-700');
+                passwordResult.classList.add('bg-green-100', 'text-green-700');
+                
+                // 更新游戏进度
+                updateGameProgress(10);
+                
+                // 关闭密码弹窗
+                setTimeout(() => {
+                    passwordModal.classList.add('hidden');
+                    
+                    // 显示第四面墙打破效果
+                    if (Math.random() > 0.5) {
+                        showFourthWallBreak();
+                    }
+                }, 2000);
+            } else {
+                passwordResult.textContent = '密码错误，请重试。';
+                passwordResult.classList.remove('hidden', 'bg-green-100', 'text-green-700');
+                passwordResult.classList.add('bg-red-100', 'text-red-700');
+            }
+        }
+
+        // 显示第四面墙打破效果
+        function showFourthWallBreak() {
+            const randomText = gameData.fourthWallBreaks[Math.floor(Math.random() * gameData.fourthWallBreaks.length)];
+            fourthWallText.textContent = randomText;
+            fourthWallEffect.classList.remove('hidden');
+        }
+
+        // 开始游戏
+        function startGame() {
+            homeContent.classList.add('hidden');
+            gameData.gameStarted = true;
+            startGameTimer();
+            updateGameProgress(5);
+            showNotification('调查开始，祝你好运！');
+        }
+
+        // 开始游戏计时器
+        function startGameTimer() {
+            const startTime = Date.now();
+            
+            setInterval(() => {
+                if (!gameData.gameStarted) return;
+                
+                const currentTime = Date.now();
+                gameData.gameTime = Math.floor((currentTime - startTime) / 1000);
+                
+                // 格式化时间
+                const hours = Math.floor(gameData.gameTime / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((gameData.gameTime % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (gameData.gameTime % 60).toString().padStart(2, '0');
+                
+                gameTimeDisplay.querySelector('span').textContent = `${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // 更新游戏进度
+        function updateGameProgress(amount) {
+            gameData.gameProgress = Math.min(100, gameData.gameProgress + amount);
+            gameStatus.querySelector('span').textContent = `${gameData.gameProgress}%`;
+        }
+
+        // 执行搜索
+        function performSearch() {
+            const searchTerm = searchInput.value.trim().toLowerCase();
+            if (!searchTerm) return;
+
+            // 模拟搜索延迟
+            searchResults.innerHTML = '<div class="p-2 bg-gray-100 rounded"><p class="text-sm text-muted">正在搜索...</p></div>';
+            searchResults.classList.remove('hidden');
+
+            setTimeout(() => {
+                let results = [];
+
+                // 搜索线索
+                Object.keys(gameData.clues).forEach(clueId => {
+                    const clue = gameData.clues[clueId];
+                    if (clue.keywords.some(keyword => keyword.toLowerCase().includes(searchTerm))) {
+                        results.push(`<a href="#" class="block p-2 hover:bg-gray-100 rounded search-result" data-clue="${clueId}">${clue.title}</a>`);
+                    }
+                });
+
+                // 搜索人物
+                const characters = [
+                    { name: "李明哲", role: "故宫博物院古籍部主任", clue: "witness-statement" },
+                    { name: "王芳", role: "故宫博物院保安", clue: "witness-statement" },
+                    { name: "陈教授", role: "古籍研究专家", clue: "witness-statement" },
+                    { name: "神秘人", role: "身份不明", clue: "witness-statement" }
+                ];
+
+                characters.forEach(character => {
+                    if (character.name.toLowerCase().includes(searchTerm) || character.role.toLowerCase().includes(searchTerm)) {
+                        results.push(`<a href="#" class="block p-2 hover:bg-gray-100 rounded search-result" data-clue="${character.clue}">${character.name} - ${character.role}</a>`);
+                    }
+                });
+
+                // 搜索主题
+                const themes = [
+                    { name: "摩斯密码", clue: "mysterious-note" },
+                    { name: "洛书", clue: "mysterious-note" },
+                    { name: "永乐大典", clue: "mysterious-note" },
+                    { name: "监控干扰", clue: "surveillance-footage" },
+                    { name: "女娲补天", clue: "witness-statement" },
+                    { name: "伏羲八卦", clue: "witness-statement" }
+                ];
+
+                themes.forEach(theme => {
+                    if (theme.name.toLowerCase().includes(searchTerm)) {
+                        results.push(`<a href="#" class="block p-2 hover:bg-gray-100 rounded search-result" data-clue="${theme.clue}">${theme.name}</a>`);
+                    }
+                });
+
+                // 显示搜索结果
+                if (results.length > 0) {
+                    searchResults.innerHTML = `<div class="p-2 bg-gray-100 rounded">${results.join('')}</div>`;
+                    
+                    // 添加搜索结果点击事件
+                    const resultLinks = searchResults.querySelectorAll('.search-result');
+                    resultLinks.forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const clueId = link.getAttribute('data-clue');
+                            showClue(clueId);
+                        });
+                    });
+                } else {
+                    searchResults.innerHTML = '<div class="p-2 bg-gray-100 rounded"><p class="text-sm text-muted">未找到相关线索，请尝试其他关键词。</p></div>';
+                }
+            }, 1000);
+        }
+
+        // 添加到笔记
+        function addToNotes(text) {
+            gameData.notes.push(text);
+            updateNotesDisplay();
+            showNotification('已添加到笔记');
+        }
+
+        // 更新笔记显示
+        function updateNotesDisplay() {
+            if (gameData.notes.length === 0) {
+                notesContent.innerHTML = '<p class="text-muted italic">你的笔记将显示在这里。点击线索可以添加到笔记中。</p>';
+                return;
+            }
+
+            notesContent.innerHTML = gameData.notes.map((note, index) => `
+                <div class="mb-2 pb-2 border-b">
+                    <p class="text-sm text-muted">${index + 1}. ${new Date().toLocaleTimeString()}</p>
+                    <p>${note}</p>
+                </div>
+            `).join('');
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('animate-fade-out');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 1000);
+            }, 3000);
+        }
+
+        // 初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

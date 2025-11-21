@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>目击者证词 - 古籍密码</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a56db',
+                        secondary: '#e5edff',
+                        accent: '#d92d20',
+                        dark: '#1e293b',
+                        light: '#f8fafc',
+                        muted: '#94a3b8',
+                        'paper-texture': '#f5f1e6',
+                        'blood-red': '#a8071a',
+                        'ancient-yellow': '#d4af37',
+                        'dark-wood': '#5d4037'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif'],
+                        mono: ['Courier New', 'monospace']
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/d705d818b886417587920fff9832cfb1~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=k3d0YX%2FDugvA5JE67vvIshf3yKM%3D')",
+                        'ancient-scroll': "url('https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/df2e1ae5b7cf4244b7109eeff57d8049~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=dQJ5fhwxUVxezTIPFnUO1dCeR5E%3D')"
+                    },
+                    boxShadow: {
+                        'text': '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                        'glow': '0 0 10px rgba(217, 45, 32, 0.7)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'fade-out': 'fadeOut 1s ease-in-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        fadeOut: {
+                            '0%': { opacity: '1' },
+                            '100%': { opacity: '0' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glow: {
+                            '0%': { filter: 'brightness(1) drop-shadow(0 0 5px rgba(217, 45, 32, 0.5))' },
+                            '100%': { filter: 'brightness(1.2) drop-shadow(0 0 15px rgba(217, 45, 32, 0.8))' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-red {
+                text-shadow: 0 0 5px rgba(217, 45, 32, 0.7);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .ancient-text {
+                font-family: 'Noto Serif SC', serif;
+                letter-spacing: 0.1em;
+                line-height: 1.8;
+            }
+            .morse-code {
+                font-family: 'Courier New', monospace;
+                letter-spacing: 0.2em;
+            }
+            .glow-effect {
+                filter: drop-shadow(0 0 8px rgba(217, 45, 32, 0.7));
+            }
+            .paper-texture-bg {
+                background-color: #f5f1e6;
+                background-image: 
+                    linear-gradient(rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+                background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+                background-position: center center;
+            }
+            .text-glow {
+                animation: glow 2s ease-in-out infinite alternate;
+            }
+            .mysterious-shadow {
+                position: relative;
+            }
+            .mysterious-shadow::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+                pointer-events: none;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- 加载屏幕 -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-dark">
+        <div class="text-center">
+            <div class="w-24 h-24 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-light text-xl">正在加载证词...</p>
+        </div>
+    </div>
+
+    <!-- 游戏容器 -->
+    <div id="game-container" class="hidden min-h-screen flex flex-col">
+        <!-- 顶部导航栏 -->
+        <header class="bg-primary text-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <h1 class="text-2xl font-bold">古籍密码</h1>
+                <div class="flex space-x-4">
+                    <button id="back-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-arrow-left mr-1"></i> 返回
+                    </button>
+                    <button id="help-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-question-circle mr-1"></i> 帮助
+                    </button>
+                    <button id="notes-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-sticky-note mr-1"></i> 笔记
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- 线索标题 -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-primary mb-2">目击者证词</h2>
+                <p class="text-muted">揭开案件背后的神话秘密</p>
+            </div>
+
+            <!-- 线索内容 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- 李明哲证词 -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fa fa-user text-blue-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">李明哲</h4>
+                                <p class="text-sm text-muted">故宫博物院古籍部主任</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-sm">"我当晚一直在办公室整理资料，大约在凌晨1点左右听到保管室有异响，但我以为是老鼠，就没有在意。"</p>
+                            <p class="text-sm">"《永乐大典》抄本非常珍贵，我们有严格的安保措施，不知道小偷是怎么进去的。"</p>
+                            <p class="text-sm">"那个神秘纸条上的符号看起来像是某种古代密码，我在一些宋代文献中见过类似的符号。"</p>
+                            <p class="text-sm font-bold mt-2 text-primary cursor-pointer hover:underline statement-clue" data-clue="li-mingzhe">查看更多证词</p>
+                        </div>
+                    </div>
+
+                    <!-- 王芳证词 -->
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fa fa-shield text-green-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold">王芳</h4>
+                                <p class="text-sm text-muted">故宫博物院保安</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <p class="text-sm">"我在巡逻时看到一个穿着黑色长袍的人影在古籍馆附近徘徊，戴着帽子和口罩，看不清脸。"</p>
+                            <p class="text-sm">"那个人行动诡异，看到我就立刻消失在阴影中。我当时觉得奇怪，但没有想到会发生盗窃案。"</p>
+                            <p class="text-sm">"那个人的眼睛很奇怪，在黑暗中似乎发出微弱的红光。"</p>
+                            <p class="text-sm font-bold mt-2 text-primary cursor-pointer hover:underline statement-clue" data-clue="wang-fang">查看更多证词</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 陈教授证词 -->
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                            <i class="fa fa-graduation-cap text-purple-500 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">陈教授</h4>
+                            <p class="text-sm text-muted">古籍研究专家</p>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <p class="text-sm">"我前一天确实研究过那卷《永乐大典》抄本，那是一卷关于中国古代神话的内容，特别是关于女娲补天和伏羲八卦的部分。"</p>
+                        <p class="text-sm">"那卷抄本中有一些非常罕见的记载，可能对研究中国古代神话有重要价值。"</p>
+                        <p class="text-sm">"我在研究过程中发现，抄本的最后几页似乎被人撕去了，内容不完整。"</p>
+                        <p class="text-sm font-bold mt-2 text-primary cursor-pointer hover:underline statement-clue" data-clue="professor-chen">查看更多证词</p>
+                    </div>
+                </div>
+
+                <!-- 中国古代神话线索 -->
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-4">中国古代神话线索</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <h4 class="font-bold mb-2">洛书</h4>
+                                <p class="text-sm mb-3">洛书是中国古代神话中的一部神秘典籍，传说由神龟从洛水中背出，包含了宇宙的奥秘和天地的规律。</p>
+                                <div class="text-center">
+                                    <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-qvj2lq49k0/776a022546ad4a1291ec74bfb902a85d~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=1jUfbGiZCU9ewDE89951g7BqYMw%3D" alt="洛书" class="max-w-xs mx-auto rounded-lg">
+                                </div>
+                            </div>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                                <div class="flex">
+                                    <div class="flex-shrink-0">
+                                        <i class="fa fa-lightbulb-o text-yellow-400 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <p class="text-sm text-yellow-700">
+                                            提示: 洛书的图案是一个3x3的方格，其中填入1-9的数字，使得每行、每列和两条对角线上的数字之和都相等，均为15。
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="bg-gray-50 p-4 rounded-lg mb-4">
+                                <h4 class="font-bold mb-2">女娲补天</h4>
+                                <p class="text-sm mb-3">女娲补天是中国古代神话中的重要故事，讲述了女娲炼五色石补天，拯救苍生的故事。据《永乐大典》抄本记载，女娲补天时使用的五色石中蕴含着神秘的力量。</p>
+                                <div class="text-center">
+                                    <img src="https://p26-doubao-search-sign.byteimg.com/labis/4e01f868b38496e744305c50fef2f30a~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=QZhrxTu%2BodSAKsd1we2%2F9lrEeLE%3D" alt="女娲补天" class="max-w-xs mx-auto rounded-lg">
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-bold mb-2">伏羲八卦</h4>
+                                <p class="text-sm">伏羲八卦是中国古代哲学的重要符号系统，由伏羲氏创造。八卦分别代表天、地、水、火、风、雷、山、泽八种自然现象，相互组合可以形成六十四卦，预测未来。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 洛书密码破解 -->
+                <div class="mt-8">
+                    <h4 class="font-bold mb-4">洛书密码破解:</h4>
+                    <p class="mb-4">根据古籍记载，洛书的数字排列是解开许多古代密码的关键。请根据洛书的规律，填写下面的数字方格:</p>
+                    
+                    <div class="flex justify-center mb-6">
+                        <div class="grid grid-cols-3 gap-2 w-48">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="0" data-col="0">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="0" data-col="1">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="0" data-col="2">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="1" data-col="0">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="1" data-col="1" value="5" readonly>
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="1" data-col="2">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="2" data-col="0">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="2" data-col="1">
+                            <input type="text" class="洛书-cell w-14 h-14 text-center text-lg border rounded" data-row="2" data-col="2">
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-center">
+                        <button id="check-洛书" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                            检查答案
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 调查笔记 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4 border-b pb-2">调查笔记</h3>
+                <div id="notes-content" class="prose max-w-none min-h-[200px] bg-gray-50 p-4 rounded">
+                    <p class="text-muted italic">在这里记录你的调查思路和发现...</p>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button id="save-note" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                        保存笔记
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="bg-dark text-light py-3">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div id="game-status" class="text-sm">调查进度: <span class="text-primary">60%</span></div>
+                <div id="game-time" class="text-sm">游戏时间: <span>00:00:00</span></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 证词详情弹窗 -->
+    <div id="statement-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 id="statement-title" class="text-2xl font-bold text-primary"></h2>
+                    <button id="close-statement" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="statement-content" class="prose max-w-none">
+                    <!-- 证词内容将通过JavaScript动态加载 -->
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="close-statement-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div id="help-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">洛书密码帮助</h2>
+                    <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="prose max-w-none">
+                    <h3>什么是洛书？</h3>
+                    <p>洛书是中国古代神话中的一部神秘典籍，传说由神龟从洛水中背出。洛书的图案是一个3x3的方格，其中填入1-9的数字，使得每行、每列和两条对角线上的数字之和都相等，均为15。</p>
+                    
+                    <h3>洛书的数字排列规律</h3>
+                    <p>洛书的数字排列如下：</p>
+                    <div class="grid grid-cols-3 gap-2 w-48 mx-auto my-4">
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">4</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">9</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">2</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">3</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">5</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">7</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">8</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">1</div>
+                        <div class="w-14 h-14 bg-gray-100 text-center flex items-center justify-center rounded">6</div>
+                    </div>
+                    <p>这个排列满足：</p>
+                    <ul>
+                        <li>每行之和：4+9+2=15，3+5+7=15，8+1+6=15</li>
+                        <li>每列之和：4+3+8=15，9+5+1=15，2+7+6=15</li>
+                        <li>对角线之和：4+5+6=15，2+5+8=15</li>
+                    </ul>
+                    
+                    <h3>提示</h3>
+                    <p>洛书的中心数字是5，这已经在方格中给出。请根据洛书的规律，填写其余的数字。</p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="close-help-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        我知道了
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 笔记弹窗 -->
+    <div id="notes-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">调查笔记</h2>
+                    <button id="close-notes" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="all-notes-content" class="prose max-w-none min-h-[300px] bg-gray-50 p-4 rounded">
+                    <p class="text-muted italic">你的笔记将显示在这里。</p>
+                </div>
+                <div class="mt-4 flex justify-between">
+                    <button id="clear-notes" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+                        清空笔记
+                    </button>
+                    <button id="close-notes-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第四面墙打破效果 -->
+    <div id="fourth-wall-effect" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center">
+            <div class="text-center text-white max-w-2xl p-6">
+                <p id="fourth-wall-text" class="text-xl mb-6 animate-pulse-slow"></p>
+                <button id="continue-btn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    继续
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 密码破解成功弹窗 -->
+    <div id="success-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-check text-green-500 text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-primary">破解成功！</h2>
+                </div>
+                <div id="success-message" class="mb-6">
+                    <p>你成功破解了洛书密码！洛书的数字排列是解开古代秘密的关键。</p>
+                    <p class="mt-2">根据古籍记载，洛书与《永乐大典》抄本中缺失的部分有关，那部分内容记载了一种可以开启超自然力量的仪式。</p>
+                    <p class="mt-2">你意识到，失窃的《永乐大典》抄本可能不仅仅是一部古籍，而是一把可以打开某种超自然力量的钥匙。而那个穿着黑色长袍的神秘人，可能就是为了这个目的才偷走了抄本。</p>
+                </div>
+                <div class="flex justify-center">
+                    <button id="close-success" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+                        继续调查
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结局选择弹窗 -->
+    <div id="ending-choice-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-primary mb-2">最终选择</h2>
+                    <p class="text-muted">你的选择将决定案件的结局</p>
+                </div>
+                <div class="mb-6">
+                    <p class="mb-4">经过一番调查，你终于找到了失窃的《永乐大典》抄本和那个穿着黑色长袍的神秘人。神秘人告诉你，他是一个古老秘密组织的成员，这个组织守护着洛书的秘密已经数百年了。</p>
+                    <p class="mb-4">神秘人解释说，《永乐大典》抄本中记载的仪式可以唤醒一种沉睡的超自然力量，这种力量如果落入坏人手中，将会带来灾难性的后果。他偷走抄本是为了防止这种情况发生。</p>
+                    <p>神秘人给了你两个选择：</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">选择A：相信神秘人</h4>
+                        <p class="text-sm">你选择相信神秘人的话，认为他真的是在保护洛书的秘密。你决定帮助他将《永乐大典》抄本藏到一个更安全的地方。</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <h4 class="font-bold mb-2">选择B：不相信神秘人</h4>
+                        <p class="text-sm">你认为神秘人在撒谎，他可能是为了独占洛书的秘密才偷走抄本。你决定将他交给警方，并夺回《永乐大典》抄本。</p>
+                    </div>
+                </div>
+                <div class="flex justify-center space-x-4">
+                    <button id="choice-a" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+                        选择A：相信神秘人
+                    </button>
+                    <button id="choice-b" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+                        选择B：不相信神秘人
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 结局弹窗 -->
+    <div id="ending-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <h2 id="ending-title" class="text-2xl font-bold text-primary"></h2>
+                </div>
+                <div id="ending-content" class="mb-6">
+                    <!-- 结局内容将通过JavaScript动态加载 -->
+                </div>
+                <div class="flex justify-center">
+                    <button id="restart-game" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+                        重新开始
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const gameData = {
+            notes: [],
+            gameTime: 0,
+            fourthWallBreaks: [
+                "洛书的秘密...你真的准备好面对它了吗？",
+                "那个神秘人...他的眼睛和你很像...",
+                "你有没有想过，为什么是你发现了这些线索？"
+            ],
+            statements: {
+                "li-mingzhe": {
+                    title: "李明哲的更多证词",
+                    content: `
+                        <p class="mb-4">在进一步的询问中，李明哲透露了一些之前没有提到的细节。</p>
+                        <p class="mb-4">"其实，我并不是第一次看到那些奇怪的符号。大约在一个月前，我在整理一批新收到的古籍时，也发现了类似的符号。当时我以为只是某种古代的装饰图案，就没有在意。"</p>
+                        <p class="mb-4">"现在回想起来，那些古籍似乎也是关于中国古代神话的内容，特别是关于洛书和八卦的部分。"</p>
+                        <p class="mb-4">"还有一件事，我不知道是否重要。在案发前几天，我注意到陈教授的行为有些奇怪。他经常在深夜还待在研究室里，而且对那卷《永乐大典》抄本表现出异常的兴趣。"</p>
+                        <p class="mb-4">"有一次，我无意中听到他在打电话，提到了'洛书'、'仪式'和'唤醒力量'之类的词语。当时我没有在意，但现在想来，这可能与案件有关。"</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-lightbulb-o text-yellow-400 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700">
+                                        新线索: 李明哲提到陈教授的行为异常，并且在电话中提到了"洛书"、"仪式"和"唤醒力量"等词语。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                "wang-fang": {
+                    title: "王芳的更多证词",
+                    content: `
+                        <p class="mb-4">在进一步的询问中，王芳回忆起了更多关于那个神秘人的细节。</p>
+                        <p class="mb-4">"现在回想起来，那个人的身材和走路姿势有点像我们博物馆的一个人，但我不确定是谁。"</p>
+                        <p class="mb-4">"那个人穿着一件黑色的长袍，袍子上似乎有一些金色的图案，看起来像是某种古代的符号。"</p>
+                        <p class="mb-4">"当那个人转身消失在阴影中时，我似乎看到他袍子的下摆上有一个奇怪的标记，像是一个3x3的方格，里面有一些数字。"</p>
+                        <p class="mb-4">"还有一件事，我不知道是否重要。在案发当晚，我感觉博物馆里的气氛有些奇怪，好像有什么东西在盯着我看。而且，我总觉得那天晚上的月亮特别亮，亮得有些不正常。"</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-lightbulb-o text-yellow-400 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700">
+                                        新线索: 王芳提到神秘人袍子上的金色图案和3x3方格标记，这可能与洛书有关。她还提到案发当晚的月亮特别亮。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                },
+                "professor-chen": {
+                    title: "陈教授的更多证词",
+                    content: `
+                        <p class="mb-4">在进一步的询问中，陈教授终于透露了一些他之前隐瞒的信息。</p>
+                        <p class="mb-4">"好吧，我承认我之前没有告诉你全部真相。那卷《永乐大典》抄本确实包含了一些非常重要的内容，这些内容可能会改变我们对中国古代历史和神话的理解。"</p>
+                        <p class="mb-4">"抄本中记载了一种可以唤醒沉睡超自然力量的仪式，这种力量据说与洛书有关。根据记载，这种力量可以用来治愈疾病、预测未来，甚至改变现实。"</p>
+                        <p class="mb-4">"我一直在研究这种力量，希望能够利用它来造福人类。但是，我也知道这种力量如果落入坏人手中，将会带来灾难性的后果。"</p>
+                        <p class="mb-4">"案发前一天，我在研究抄本时发现，最后几页确实被人撕去了。那些页面上记载了仪式的关键步骤和注意事项。"</p>
+                        <p class="mb-4">"我怀疑是李明哲撕去了那些页面，因为他一直对我的研究表现出不满，认为我在浪费时间和资源。"</p>
+                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fa fa-lightbulb-o text-yellow-400 text-xl"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-yellow-700">
+                                        新线索: 陈教授承认《永乐大典》抄本中记载了一种可以唤醒超自然力量的仪式，并怀疑是李明哲撕去了抄本的最后几页。
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `
+                }
+            },
+            endings: {
+                "a": {
+                    title: "结局A：守护者的传承",
+                    content: `
+                        <p class="mb-4">你选择相信神秘人的话，决定帮助他保护洛书的秘密。</p>
+                        <p class="mb-4">神秘人带你来到一个隐藏在故宫深处的密室，那里存放着许多与洛书有关的文物和典籍。他告诉你，他是一个名为"洛书守护者"的秘密组织的成员，这个组织已经守护洛书的秘密数百年了。</p>
+                        <p class="mb-4">神秘人解释说，《永乐大典》抄本中记载的仪式确实可以唤醒一种沉睡的超自然力量，但这种力量非常危险，如果落入坏人手中，将会带来灾难性的后果。他偷走抄本是为了防止这种情况发生。</p>
+                        <p class="mb-4">在接下来的几个月里，你深入研究了洛书的秘密，逐渐了解了它的力量和危险。你发现洛书不仅仅是一部古籍，而是一个可以连接人与自然、过去与未来的桥梁。</p>
+                        <p class="mb-4">最终，你决定加入"洛书守护者"组织，成为一名守护洛书秘密的新成员。你和其他守护者一起，继续保护着这个古老的秘密，确保它不会落入坏人手中。</p>
+                        <p class="mb-4">多年后，你成为了"洛书守护者"组织的领导者，继续传承着这个古老的使命。你明白，有些秘密之所以需要被守护，是因为它们太重要、太危险，不能让所有人都知道。</p>
+                        <p class="font-bold text-center mt-6">游戏结束</p>
+                    `
+                },
+                "b": {
+                    title: "结局B：真相的代价",
+                    content: `
+                        <p class="mb-4">你选择不相信神秘人的话，决定将他交给警方，并夺回《永乐大典》抄本。</p>
+                        <p class="mb-4">你趁神秘人不备，按下了藏在口袋里的警报器。很快，警察赶到现场，将神秘人逮捕。</p>
+                        <p class="mb-4">在审讯中，神秘人坚持说他是在保护洛书的秘密，但警方认为他在胡说八道，将他定为盗窃犯。</p>
+                        <p class="mb-4">你成功夺回了《永乐大典》抄本，并将它归还给了故宫博物院。然而，在归还之前，你忍不住好奇，偷偷阅读了抄本中记载的仪式。</p>
+                        <p class="mb-4">你被仪式的描述所吸引，决定在一个月圆之夜尝试一下。你按照抄本中的指示，在故宫的一个偏僻角落举行了仪式。</p>
+                        <p class="mb-4">当仪式进行到一半时，你突然感到一股强大的力量从四面八方涌来，包围了你。你意识到神秘人说的是对的，洛书确实蕴含着强大的超自然力量。</p>
+                        <p class="mb-4">然而，你已经无法控制这股力量。它像一个巨大的漩涡，将你卷入其中。在失去意识的最后一刻，你看到了无数的景象：古代的战争、繁荣的文明、毁灭的灾难...</p>
+                        <p class="mb-4">当你再次醒来时，发现自己躺在医院的病床上。医生告诉你，你在故宫的一个偏僻角落被发现，当时你已经失去了意识。</p>
+                        <p class="mb-4">你再也没有提起过洛书的秘密，也没有告诉任何人你经历的一切。但你知道，有些秘密之所以需要被守护，是因为它们太重要、太危险，不能让所有人都知道。</p>
+                        <p class="font-bold text-center mt-6">游戏结束</p>
+                    `
+                }
+            }
+        };
+
+        // DOM元素
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameContainer = document.getElementById('game-container');
+        const backBtn = document.getElementById('back-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelp = document.getElementById('close-help');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        const notesBtn = document.getElementById('notes-btn');
+        const notesModal = document.getElementById('notes-modal');
+        const closeNotes = document.getElementById('close-notes');
+        const closeNotesBtn = document.getElementById('close-notes-btn');
+        const allNotesContent = document.getElementById('all-notes-content');
+        const clearNotes = document.getElementById('clear-notes');
+        const notesContent = document.getElementById('notes-content');
+        const saveNote = document.getElementById('save-note');
+        const fourthWallEffect = document.getElementById('fourth-wall-effect');
+        const fourthWallText = document.getElementById('fourth-wall-text');
+        const continueBtn = document.getElementById('continue-btn');
+        const gameStatus = document.getElementById('game-status');
+        const gameTimeDisplay = document.getElementById('game-time');
+        const statementClues = document.querySelectorAll('.statement-clue');
+        const statementModal = document.getElementById('statement-modal');
+        const statementTitle = document.getElementById('statement-title');
+        const statementContent = document.getElementById('statement-content');
+        const closeStatement = document.getElementById('close-statement');
+        const closeStatementBtn = document.getElementById('close-statement-btn');
+        const 洛书Cells = document.querySelectorAll('.洛书-cell');
+        const check洛书 = document.getElementById('check-洛书');
+        const successModal = document.getElementById('success-modal');
+        const closeSuccess = document.getElementById('close-success');
+        const endingChoiceModal = document.getElementById('ending-choice-modal');
+        const choiceA = document.getElementById('choice-a');
+        const choiceB = document.getElementById('choice-b');
+        const endingModal = document.getElementById('ending-modal');
+        const endingTitle = document.getElementById('ending-title');
+        const endingContent = document.getElementById('ending-content');
+        const restartGame = document.getElementById('restart-game');
+
+        // 游戏初始化
+        function initGame() {
+            // 模拟加载
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                gameContainer.classList.remove('hidden');
+                gameContainer.classList.add('animate-fade-in');
+            }, 1500);
+
+            // 初始化事件监听
+            initEventListeners();
+            
+            // 开始游戏计时器
+            startGameTimer();
+            
+            // 从localStorage加载笔记
+            loadNotes();
+        }
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 返回按钮点击事件
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+
+            // 帮助按钮点击事件
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+            });
+
+            // 关闭帮助弹窗
+            closeHelp.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            // 笔记按钮点击事件
+            notesBtn.addEventListener('click', () => {
+                updateNotesDisplay();
+                notesModal.classList.remove('hidden');
+            });
+
+            // 关闭笔记弹窗
+            closeNotes.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            closeNotesBtn.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            // 清空笔记
+            clearNotes.addEventListener('click', () => {
+                if (confirm('确定要清空所有笔记吗？')) {
+                    gameData.notes = [];
+                    saveNotes();
+                    updateNotesDisplay();
+                }
+            });
+
+            // 保存笔记
+            saveNote.addEventListener('click', () => {
+                const noteText = notesContent.value.trim();
+                if (noteText) {
+                    addToNotes(noteText);
+                    notesContent.value = '';
+                    showNotification('笔记已保存');
+                } else {
+                    showNotification('笔记内容不能为空');
+                }
+            });
+
+            // 继续按钮点击事件
+            continueBtn.addEventListener('click', () => {
+                fourthWallEffect.classList.add('hidden');
+                
+                // 显示结局选择弹窗
+                setTimeout(() => {
+                    endingChoiceModal.classList.remove('hidden');
+                }, 1000);
+            });
+
+            // 证词线索点击事件
+            statementClues.forEach(clue => {
+                clue.addEventListener('click', () => {
+                    const statementId = clue.getAttribute('data-clue');
+                    showStatement(statementId);
+                });
+            });
+
+            // 关闭证词弹窗
+            closeStatement.addEventListener('click', () => {
+                statementModal.classList.add('hidden');
+            });
+
+            closeStatementBtn.addEventListener('click', () => {
+                statementModal.classList.add('hidden');
+            });
+
+            // 检查洛书答案
+            check洛书.addEventListener('click', () => {
+                check洛书Answer();
+            });
+
+            // 关闭成功弹窗
+            closeSuccess.addEventListener('click', () => {
+                successModal.classList.add('hidden');
+                
+                // 显示第四面墙打破效果
+                setTimeout(() => {
+                    showFourthWallBreak();
+                }, 1000);
+            });
+
+            // 结局选择A
+            choiceA.addEventListener('click', () => {
+                showEnding('a');
+            });
+
+            // 结局选择B
+            choiceB.addEventListener('click', () => {
+                showEnding('b');
+            });
+
+            // 重新开始游戏
+            restartGame.addEventListener('click', () => {
+                // 清除localStorage
+                localStorage.removeItem('mysteryGameNotes');
+                
+                // 跳转到主页面
+                window.location.href = 'index.html';
+            });
+        }
+
+        // 开始游戏计时器
+        function startGameTimer() {
+            const startTime = Date.now();
+            
+            setInterval(() => {
+                const currentTime = Date.now();
+                gameData.gameTime = Math.floor((currentTime - startTime) / 1000);
+                
+                // 格式化时间
+                const hours = Math.floor(gameData.gameTime / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((gameData.gameTime % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (gameData.gameTime % 60).toString().padStart(2, '0');
+                
+                gameTimeDisplay.querySelector('span').textContent = `${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // 显示证词详情
+        function showStatement(statementId) {
+            const statement = gameData.statements[statementId];
+            if (!statement) return;
+            
+            statementTitle.textContent = statement.title;
+            statementContent.innerHTML = statement.content;
+            statementModal.classList.remove('hidden');
+            
+            // 更新游戏进度
+            updateGameProgress(5);
+            
+            // 添加到笔记
+            if (statementId === 'li-mingzhe') {
+                addToNotes('李明哲提到陈教授的行为异常，并且在电话中提到了"洛书"、"仪式"和"唤醒力量"等词语。');
+            } else if (statementId === 'wang-fang') {
+                addToNotes('王芳提到神秘人袍子上的金色图案和3x3方格标记，这可能与洛书有关。她还提到案发当晚的月亮特别亮。');
+            } else if (statementId === 'professor-chen') {
+                addToNotes('陈教授承认《永乐大典》抄本中记载了一种可以唤醒超自然力量的仪式，并怀疑是李明哲撕去了抄本的最后几页。');
+            }
+        }
+
+        // 检查洛书答案
+        function check洛书Answer() {
+            const correct洛书 = [
+                [4, 9, 2],
+                [3, 5, 7],
+                [8, 1, 6]
+            ];
+            
+            let isCorrect = true;
+            
+            洛书Cells.forEach(cell => {
+                const row = parseInt(cell.getAttribute('data-row'));
+                const col = parseInt(cell.getAttribute('data-col'));
+                const value = parseInt(cell.value);
+                
+                if (isNaN(value) || value !== correct洛书[row][col]) {
+                    isCorrect = false;
+                }
+            });
+            
+            if (isCorrect) {
+                // 更新游戏进度
+                gameStatus.querySelector('span').textContent = '80%';
+                
+                // 添加到笔记
+                addToNotes('洛书的正确排列是：\n4 9 2\n3 5 7\n8 1 6\n每行、每列和两条对角线上的数字之和都等于15。');
+                
+                // 显示成功弹窗
+                successModal.classList.remove('hidden');
+            } else {
+                showNotification('答案不正确，请重试。提示：每行、每列和两条对角线上的数字之和都应等于15。');
+            }
+        }
+
+        // 显示第四面墙打破效果
+        function showFourthWallBreak() {
+            const randomText = gameData.fourthWallBreaks[Math.floor(Math.random() * gameData.fourthWallBreaks.length)];
+            fourthWallText.textContent = randomText;
+            fourthWallEffect.classList.remove('hidden');
+        }
+
+        // 显示结局
+        function showEnding(endingId) {
+            const ending = gameData.endings[endingId];
+            if (!ending) return;
+            
+            endingTitle.textContent = ending.title;
+            endingContent.innerHTML = ending.content;
+            endingChoiceModal.classList.add('hidden');
+            endingModal.classList.remove('hidden');
+            
+            // 更新游戏进度
+            gameStatus.querySelector('span').textContent = '100%';
+        }
+
+        // 添加到笔记
+        function addToNotes(text) {
+            gameData.notes.push({
+                text: text,
+                time: new Date().toLocaleTimeString()
+            });
+            saveNotes();
+            updateNotesDisplay();
+        }
+
+        // 保存笔记到localStorage
+        function saveNotes() {
+            localStorage.setItem('mysteryGameNotes', JSON.stringify(gameData.notes));
+        }
+
+        // 从localStorage加载笔记
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('mysteryGameNotes');
+            if (savedNotes) {
+                gameData.notes = JSON.parse(savedNotes);
+                updateNotesDisplay();
+            }
+        }
+
+        // 更新笔记显示
+        function updateNotesDisplay() {
+            if (gameData.notes.length === 0) {
+                allNotesContent.innerHTML = '<p class="text-muted italic">你的笔记将显示在这里。</p>';
+                return;
+            }
+
+            allNotesContent.innerHTML = gameData.notes.map((note, index) => `
+                <div class="mb-2 pb-2 border-b">
+                    <p class="text-sm text-muted">${index + 1}. ${note.time}</p>
+                    <p>${note.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // 更新游戏进度
+        function updateGameProgress(amount) {
+            const currentProgress = parseInt(gameStatus.querySelector('span').textContent);
+            const newProgress = Math.min(100, currentProgress + amount);
+            gameStatus.querySelector('span').textContent = `${newProgress}%`;
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('animate-fade-out');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 1000);
+            }, 3000);
+        }
+
+        // 初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

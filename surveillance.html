@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监控录像 - 古籍密码</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1a56db',
+                        secondary: '#e5edff',
+                        accent: '#d92d20',
+                        dark: '#1e293b',
+                        light: '#f8fafc',
+                        muted: '#94a3b8',
+                        'paper-texture': '#f5f1e6',
+                        'blood-red': '#a8071a',
+                        'ancient-yellow': '#d4af37',
+                        'dark-wood': '#5d4037'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        serif: ['Noto Serif SC', 'serif'],
+                        mono: ['Courier New', 'monospace']
+                    },
+                    backgroundImage: {
+                        'paper-texture': "url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/d705d818b886417587920fff9832cfb1~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=k3d0YX%2FDugvA5JE67vvIshf3yKM%3D')",
+                        'ancient-scroll': "url('https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/df2e1ae5b7cf4244b7109eeff57d8049~tplv-a9rns2rl98-image.image?rcl=2025112114421045AC90B428D6EB8BA14B&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766299373&x-signature=dQJ5fhwxUVxezTIPFnUO1dCeR5E%3D')"
+                    },
+                    boxShadow: {
+                        'text': '2px 2px 4px rgba(0, 0, 0, 0.5)',
+                        'glow': '0 0 10px rgba(217, 45, 32, 0.7)'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 1s ease-in-out',
+                        'fade-out': 'fadeOut 1s ease-in-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'snow': 'snow 8s linear infinite',
+                        'glitch': 'glitch 1s infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        fadeOut: {
+                            '0%': { opacity: '1' },
+                            '100%': { opacity: '0' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        snow: {
+                            '0%': { backgroundPosition: '0 0, 0 0' },
+                            '100%': { backgroundPosition: '500px 500px, 500px 500px' }
+                        },
+                        glitch: {
+                            '0%': { transform: 'translate(0)' },
+                            '20%': { transform: 'translate(-2px, 2px)' },
+                            '40%': { transform: 'translate(-2px, -2px)' },
+                            '60%': { transform: 'translate(2px, 2px)' },
+                            '80%': { transform: 'translate(2px, -2px)' },
+                            '100%': { transform: 'translate(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .text-shadow-red {
+                text-shadow: 0 0 5px rgba(217, 45, 32, 0.7);
+            }
+            .bg-blur {
+                backdrop-filter: blur(8px);
+            }
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
+            }
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
+            .ancient-text {
+                font-family: 'Noto Serif SC', serif;
+                letter-spacing: 0.1em;
+                line-height: 1.8;
+            }
+            .morse-code {
+                font-family: 'Courier New', monospace;
+                letter-spacing: 0.2em;
+            }
+            .glow-effect {
+                filter: drop-shadow(0 0 8px rgba(217, 45, 32, 0.7));
+            }
+            .paper-texture-bg {
+                background-color: #f5f1e6;
+                background-image: 
+                    linear-gradient(rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 2px, transparent 2px),
+                    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+                background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+                background-position: center center;
+            }
+            .tv-static {
+                background: 
+                    linear-gradient(180deg, rgba(180, 180, 180, 0) 0%, rgba(180, 180, 180, 0.8) 50%, rgba(180, 180, 180, 0) 100%),
+                    linear-gradient(90deg, rgba(180, 180, 180, 0) 0%, rgba(180, 180, 180, 0.8) 50%, rgba(180, 180, 180, 0) 100%);
+                background-size: 100px 100px, 100px 100px;
+                animation: snow 8s linear infinite;
+            }
+            .signal-interference {
+                position: relative;
+                overflow: hidden;
+            }
+            .signal-interference::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.1);
+                transform: skewX(-15deg) translateX(-100%);
+                animation: signal 3s infinite;
+            }
+            @keyframes signal {
+                0% { transform: skewX(-15deg) translateX(-100%); }
+                100% { transform: skewX(-15deg) translateX(100%); }
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- 加载屏幕 -->
+    <div id="loading-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-dark">
+        <div class="text-center">
+            <div class="w-24 h-24 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-light text-xl">正在加载监控录像...</p>
+        </div>
+    </div>
+
+    <!-- 游戏容器 -->
+    <div id="game-container" class="hidden min-h-screen flex flex-col">
+        <!-- 顶部导航栏 -->
+        <header class="bg-primary text-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                <h1 class="text-2xl font-bold">古籍密码</h1>
+                <div class="flex space-x-4">
+                    <button id="back-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-arrow-left mr-1"></i> 返回
+                    </button>
+                    <button id="help-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-question-circle mr-1"></i> 帮助
+                    </button>
+                    <button id="notes-btn" class="px-3 py-1 rounded hover:bg-blue-700 transition-colors">
+                        <i class="fa fa-sticky-note mr-1"></i> 笔记
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- 线索标题 -->
+            <div class="text-center mb-6">
+                <h2 class="text-3xl font-bold text-primary mb-2">监控录像分析</h2>
+                <p class="text-muted">破解干扰信号中的秘密</p>
+            </div>
+
+            <!-- 线索内容 -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="text-center mb-6">
+                    <div class="relative inline-block">
+                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <button id="play-video" class="w-16 h-16 bg-primary bg-opacity-80 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-colors">
+                                <i class="fa fa-play text-white text-2xl"></i>
+                            </button>
+                        </div>
+                        <img src="https://p26-doubao-search-sign.byteimg.com/pgc-image/SDrMc2s9FZmNni~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=XamcrBHubFHeuMGZbadxTVk3zoI%3D" alt="监控录像" class="max-w-md mx-auto rounded-lg shadow-lg">
+                    </div>
+                </div>
+                
+                <p class="mb-4">技术人员对监控录像进行了修复，虽然大部分画面仍然模糊不清，但他们发现干扰信号中隐藏着某种规律。</p>
+                
+                <div class="bg-black text-white p-4 rounded-lg mb-6 signal-interference" id="video-container">
+                    <p class="mb-2 text-center">【监控片段 00:17:45】</p>
+                    <div class="tv-static h-40 mb-4 rounded"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm mb-1">信号频率: <span class="text-green-400">7.83 Hz</span></p>
+                            <p class="text-sm mb-1">信号模式: <span class="text-green-400">周期性波动</span></p>
+                            <p class="text-sm">周期长度: <span class="text-green-400">12秒</span></p>
+                        </div>
+                        <div>
+                            <p class="text-sm mb-1">信号强度: <span class="text-green-400">忽强忽弱</span></p>
+                            <p class="text-sm mb-1">异常时间: <span class="text-green-400">00:17:33 - 00:17:57</span></p>
+                            <p class="text-sm">关联事件: <span class="text-green-400">月相变化</span></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="mb-4">技术人员还发现，在干扰最严重的时间段，画面中出现了一些奇怪的符号，这些符号似乎与神秘纸条上的符号有关联。</p>
+                
+                <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold mb-2">从干扰信号中提取的符号:</h4>
+                    <div class="flex flex-wrap justify-center gap-4">
+                        <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/920165020590932020~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=HFCn8sC5TlanXZUXxfO5phYwfPk%3D" alt="神秘符号1" class="w-16 h-16 object-contain">
+                        <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/915257479290683428~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=7bskGiCBQQuv2xiwYyIgsTobTtM%3D" alt="神秘符号2" class="w-16 h-16 object-contain">
+                        <img src="https://p11-doubao-search-sign.byteimg.com/tos-cn-i-be4g95zd3a/1070814322923012307~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779259350&x-signature=Fk0QofcnTKUEajc7BW%2Ff9BQrXHo%3D" alt="神秘符号3" class="w-16 h-16 object-contain">
+                    </div>
+                </div>
+                
+                <p class="mb-4">此外，技术人员还从干扰信号中提取出一串看似随机的字符序列，可能是某种加密信息:</p>
+                
+                <div class="bg-gray-100 p-4 rounded-lg mb-6">
+                    <h4 class="font-bold mb-2">加密字符序列:</h4>
+                    <p class="mono text-center text-lg">KHOOR ZRUOG</p>
+                </div>
+                
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fa fa-lightbulb-o text-yellow-400 text-xl"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">
+                                提示: 这串字符看起来像是经过凯撒密码加密的。凯撒密码是一种简单的替换密码，通过将字母表中的每个字母按照固定数量进行偏移来实现加密。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h4 class="font-bold mb-4">破解凯撒密码:</h4>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">偏移量 (1-25):</label>
+                        <input type="number" id="shift-input" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary" min="1" max="25" value="3">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">加密文本:</label>
+                        <input type="text" id="encrypted-input" class="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-primary" value="KHOOR ZRUOG" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">解密结果:</label>
+                        <input type="text" id="decrypted-output" class="w-full px-4 py-2 border rounded bg-gray-50" readonly>
+                    </div>
+                    <div class="flex justify-end">
+                        <button id="decrypt-btn" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                            解密
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 调查笔记 -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-bold mb-4 border-b pb-2">调查笔记</h3>
+                <div id="notes-content" class="prose max-w-none min-h-[200px] bg-gray-50 p-4 rounded">
+                    <p class="text-muted italic">在这里记录你的调查思路和发现...</p>
+                </div>
+                <div class="mt-4 flex justify-end">
+                    <button id="save-note" class="bg-primary text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                        保存笔记
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部状态栏 -->
+        <footer class="bg-dark text-light py-3">
+            <div class="container mx-auto px-4 flex justify-between items-center">
+                <div id="game-status" class="text-sm">调查进度: <span class="text-primary">40%</span></div>
+                <div id="game-time" class="text-sm">游戏时间: <span>00:00:00</span></div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 视频播放弹窗 -->
+    <div id="video-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-4xl w-full">
+            <div class="relative">
+                <button id="close-video" class="absolute top-2 right-2 bg-red-600 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors z-10">
+                    <i class="fa fa-times"></i>
+                </button>
+                <div class="bg-black p-4 rounded-lg">
+                    <div class="tv-static h-80 mb-4 rounded"></div>
+                    <div class="text-center text-white">
+                        <p class="mb-2">【监控片段 00:17:45】</p>
+                        <p class="text-sm text-gray-400">视频质量不佳，存在严重干扰</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 帮助弹窗 -->
+    <div id="help-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">凯撒密码帮助</h2>
+                    <button id="close-help" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="prose max-w-none">
+                    <h3>什么是凯撒密码？</h3>
+                    <p>凯撒密码是一种最简单的替换密码，它通过将字母表中的每个字母按照固定数量进行偏移来实现加密。例如，如果偏移量是3，那么A就变成D，B变成E，以此类推。</p>
+                    
+                    <h3>如何破解？</h3>
+                    <ol>
+                        <li>确定偏移量：凯撒密码的偏移量是1-25之间的一个整数</li>
+                        <li>将加密文本中的每个字母按照偏移量向前移动相应的位置</li>
+                        <li>例如，如果偏移量是3，那么D就变成A，E变成B，以此类推</li>
+                        <li>尝试不同的偏移量，直到得到有意义的文本</li>
+                    </ol>
+                    
+                    <h3>提示</h3>
+                    <p>加密文本是：KHOOR ZRUOG</p>
+                    <p>尝试不同的偏移量，看看哪个偏移量能得到有意义的英文单词。</p>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button id="close-help-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        我知道了
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 笔记弹窗 -->
+    <div id="notes-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-primary">调查笔记</h2>
+                    <button id="close-notes" class="text-gray-500 hover:text-gray-700">
+                        <i class="fa fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="all-notes-content" class="prose max-w-none min-h-[300px] bg-gray-50 p-4 rounded">
+                    <p class="text-muted italic">你的笔记将显示在这里。</p>
+                </div>
+                <div class="mt-4 flex justify-between">
+                    <button id="clear-notes" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">
+                        清空笔记
+                    </button>
+                    <button id="close-notes-btn" class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 transition-colors">
+                        关闭
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第四面墙打破效果 -->
+    <div id="fourth-wall-effect" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center">
+            <div class="text-center text-white max-w-2xl p-6">
+                <p id="fourth-wall-text" class="text-xl mb-6 animate-pulse-slow"></p>
+                <button id="continue-btn" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    继续
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 密码破解成功弹窗 -->
+    <div id="success-modal" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-xl max-w-md w-full">
+            <div class="p-6">
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa fa-check text-green-500 text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-primary">破解成功！</h2>
+                </div>
+                <div id="success-message" class="mb-6">
+                    <p>你成功破解了凯撒密码！加密文本"KHOOR ZRUOG"的解密结果是"HELLO WORLD"。</p>
+                    <p class="mt-2">这似乎是一个测试消息，但结合之前发现的"LOST"和"洛书"线索，你意识到这可能与失窃的《永乐大典》抄本中记载的"洛书"秘密有关。</p>
+                    <p class="mt-2">技术人员还发现，监控录像中的干扰信号频率7.83 Hz与地球的舒曼共振频率相同，这可能与某种超自然现象有关。</p>
+                </div>
+                <div class="flex justify-center">
+                    <button id="close-success" class="bg-primary text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors">
+                        继续调查
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 游戏数据
+        const gameData = {
+            notes: [],
+            gameTime: 0,
+            fourthWallBreaks: [
+                "你正在接近真相，但要小心，真相往往是危险的...",
+                "那个7.83 Hz的频率...你有没有感觉到什么异常？",
+                "监控录像里的影子...它好像在看着你..."
+            ]
+        };
+
+        // DOM元素
+        const loadingScreen = document.getElementById('loading-screen');
+        const gameContainer = document.getElementById('game-container');
+        const backBtn = document.getElementById('back-btn');
+        const helpBtn = document.getElementById('help-btn');
+        const helpModal = document.getElementById('help-modal');
+        const closeHelp = document.getElementById('close-help');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        const notesBtn = document.getElementById('notes-btn');
+        const notesModal = document.getElementById('notes-modal');
+        const closeNotes = document.getElementById('close-notes');
+        const closeNotesBtn = document.getElementById('close-notes-btn');
+        const allNotesContent = document.getElementById('all-notes-content');
+        const clearNotes = document.getElementById('clear-notes');
+        const notesContent = document.getElementById('notes-content');
+        const saveNote = document.getElementById('save-note');
+        const fourthWallEffect = document.getElementById('fourth-wall-effect');
+        const fourthWallText = document.getElementById('fourth-wall-text');
+        const continueBtn = document.getElementById('continue-btn');
+        const gameStatus = document.getElementById('game-status');
+        const gameTimeDisplay = document.getElementById('game-time');
+        const playVideo = document.getElementById('play-video');
+        const videoModal = document.getElementById('video-modal');
+        const closeVideo = document.getElementById('close-video');
+        const shiftInput = document.getElementById('shift-input');
+        const encryptedInput = document.getElementById('encrypted-input');
+        const decryptedOutput = document.getElementById('decrypted-output');
+        const decryptBtn = document.getElementById('decrypt-btn');
+        const successModal = document.getElementById('success-modal');
+        const closeSuccess = document.getElementById('close-success');
+
+        // 游戏初始化
+        function initGame() {
+            // 模拟加载
+            setTimeout(() => {
+                loadingScreen.classList.add('hidden');
+                gameContainer.classList.remove('hidden');
+                gameContainer.classList.add('animate-fade-in');
+            }, 1500);
+
+            // 初始化事件监听
+            initEventListeners();
+            
+            // 开始游戏计时器
+            startGameTimer();
+            
+            // 从localStorage加载笔记
+            loadNotes();
+        }
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 返回按钮点击事件
+            backBtn.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+
+            // 帮助按钮点击事件
+            helpBtn.addEventListener('click', () => {
+                helpModal.classList.remove('hidden');
+            });
+
+            // 关闭帮助弹窗
+            closeHelp.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            closeHelpBtn.addEventListener('click', () => {
+                helpModal.classList.add('hidden');
+            });
+
+            // 笔记按钮点击事件
+            notesBtn.addEventListener('click', () => {
+                updateNotesDisplay();
+                notesModal.classList.remove('hidden');
+            });
+
+            // 关闭笔记弹窗
+            closeNotes.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            closeNotesBtn.addEventListener('click', () => {
+                notesModal.classList.add('hidden');
+            });
+
+            // 清空笔记
+            clearNotes.addEventListener('click', () => {
+                if (confirm('确定要清空所有笔记吗？')) {
+                    gameData.notes = [];
+                    saveNotes();
+                    updateNotesDisplay();
+                }
+            });
+
+            // 保存笔记
+            saveNote.addEventListener('click', () => {
+                const noteText = notesContent.value.trim();
+                if (noteText) {
+                    addToNotes(noteText);
+                    notesContent.value = '';
+                    showNotification('笔记已保存');
+                } else {
+                    showNotification('笔记内容不能为空');
+                }
+            });
+
+            // 继续按钮点击事件
+            continueBtn.addEventListener('click', () => {
+                fourthWallEffect.classList.add('hidden');
+            });
+
+            // 播放视频按钮点击事件
+            playVideo.addEventListener('click', () => {
+                videoModal.classList.remove('hidden');
+            });
+
+            // 关闭视频弹窗
+            closeVideo.addEventListener('click', () => {
+                videoModal.classList.add('hidden');
+            });
+
+            // 解密按钮点击事件
+            decryptBtn.addEventListener('click', () => {
+                decryptCaesarCipher();
+            });
+
+            // 关闭成功弹窗
+            closeSuccess.addEventListener('click', () => {
+                successModal.classList.add('hidden');
+                
+                // 显示第四面墙打破效果
+                setTimeout(() => {
+                    showFourthWallBreak();
+                }, 1000);
+            });
+        }
+
+        // 开始游戏计时器
+        function startGameTimer() {
+            const startTime = Date.now();
+            
+            setInterval(() => {
+                const currentTime = Date.now();
+                gameData.gameTime = Math.floor((currentTime - startTime) / 1000);
+                
+                // 格式化时间
+                const hours = Math.floor(gameData.gameTime / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((gameData.gameTime % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (gameData.gameTime % 60).toString().padStart(2, '0');
+                
+                gameTimeDisplay.querySelector('span').textContent = `${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // 解密凯撒密码
+        function decryptCaesarCipher() {
+            const shift = parseInt(shiftInput.value);
+            const encryptedText = encryptedInput.value.toUpperCase();
+            let decryptedText = '';
+            
+            if (isNaN(shift) || shift < 1 || shift > 25) {
+                showNotification('请输入有效的偏移量（1-25）');
+                return;
+            }
+            
+            for (let i = 0; i < encryptedText.length; i++) {
+                const char = encryptedText[i];
+                
+                if (char === ' ') {
+                    decryptedText += ' ';
+                    continue;
+                }
+                
+                const charCode = encryptedText.charCodeAt(i);
+                if (charCode >= 65 && charCode <= 90) {
+                    // 大写字母
+                    let newCharCode = charCode - shift;
+                    if (newCharCode < 65) {
+                        newCharCode += 26;
+                    }
+                    decryptedText += String.fromCharCode(newCharCode);
+                } else {
+                    decryptedText += char;
+                }
+            }
+            
+            decryptedOutput.value = decryptedText;
+            
+            // 检查是否解密成功
+            if (decryptedText === 'HELLO WORLD') {
+                // 更新游戏进度
+                gameStatus.querySelector('span').textContent = '50%';
+                
+                // 添加到笔记
+                addToNotes('凯撒密码破解结果: KHOOR ZRUOG -> HELLO WORLD（偏移量3）');
+                
+                // 显示成功弹窗
+                successModal.classList.remove('hidden');
+            }
+        }
+
+        // 显示第四面墙打破效果
+        function showFourthWallBreak() {
+            const randomText = gameData.fourthWallBreaks[Math.floor(Math.random() * gameData.fourthWallBreaks.length)];
+            fourthWallText.textContent = randomText;
+            fourthWallEffect.classList.remove('hidden');
+        }
+
+        // 添加到笔记
+        function addToNotes(text) {
+            gameData.notes.push({
+                text: text,
+                time: new Date().toLocaleTimeString()
+            });
+            saveNotes();
+            updateNotesDisplay();
+        }
+
+        // 保存笔记到localStorage
+        function saveNotes() {
+            localStorage.setItem('mysteryGameNotes', JSON.stringify(gameData.notes));
+        }
+
+        // 从localStorage加载笔记
+        function loadNotes() {
+            const savedNotes = localStorage.getItem('mysteryGameNotes');
+            if (savedNotes) {
+                gameData.notes = JSON.parse(savedNotes);
+                updateNotesDisplay();
+            }
+        }
+
+        // 更新笔记显示
+        function updateNotesDisplay() {
+            if (gameData.notes.length === 0) {
+                allNotesContent.innerHTML = '<p class="text-muted italic">你的笔记将显示在这里。</p>';
+                return;
+            }
+
+            allNotesContent.innerHTML = gameData.notes.map((note, index) => `
+                <div class="mb-2 pb-2 border-b">
+                    <p class="text-sm text-muted">${index + 1}. ${note.time}</p>
+                    <p>${note.text}</p>
+                </div>
+            `).join('');
+        }
+
+        // 显示通知
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 bg-primary text-white px-4 py-2 rounded-lg shadow-lg animate-fade-in';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('animate-fade-out');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 1000);
+            }, 3000);
+        }
+
+        // 初始化游戏
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
